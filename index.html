@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wee Call Center — CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Raleway:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #E86610;
+    --orange-light: #F5A623;
+    --orange-gold: #F0B429;
+    --black: #1a1a1a;
+    --dark: #252525;
+    --card: #2e2e2e;
+    --card2: #363636;
+    --border: #444;
+    --text: #f0f0f0;
+    --muted: #999;
+    --green: #4CAF50;
+    --red: #e53935;
+    --blue: #2196F3;
+    --yellow: #FFD600;
+    --purple: #9C27B0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--black);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== LOGIN ===== */
+  #login-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 30% 50%, #3a1a0080 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, #1a0a0080 0%, transparent 60%),
+                var(--black);
+  }
+
+  .login-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0 30px 80px #00000080;
+  }
+
+  .login-logo {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 900;
+    font-size: 42px;
+    color: var(--orange);
+    letter-spacing: -1px;
+    margin-bottom: 4px;
+  }
+
+  .login-logo span { color: var(--orange-gold); }
+  .login-sub { color: var(--muted); font-size: 13px; margin-bottom: 32px; letter-spacing: 2px; text-transform: uppercase; }
+
+  .login-card input {
+    width: 100%;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    margin-bottom: 12px;
+    outline: none;
+    transition: border 0.2s;
+  }
+
+  .login-card input:focus { border-color: var(--orange); }
+
+  .btn-login {
+    width: 100%;
+    background: linear-gradient(135deg, var(--orange), var(--orange-gold));
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    color: white;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 8px;
+    letter-spacing: 1px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .btn-login:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .login-hint {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ===== MAIN APP ===== */
+  #app { display: none; height: 100vh; flex-direction: column; }
+
+  /* Header */
+  .header {
+    background: var(--dark);
+    border-bottom: 2px solid var(--orange);
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-logo {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 900;
+    font-size: 24px;
+    color: var(--orange);
+  }
+  .header-logo span { color: var(--orange-gold); }
+  .header-badge {
+    font-size: 10px;
+    background: var(--orange);
+    color: white;
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin-left: 8px;
+    vertical-align: middle;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .header-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .user-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--orange), var(--orange-gold));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    color: white;
+  }
+
+  .user-info { text-align: right; }
+  .user-name { font-weight: 700; font-size: 14px; }
+  .user-role { font-size: 11px; color: var(--orange-gold); font-weight: 600; }
+
+  .btn-logout {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-logout:hover { border-color: var(--orange); color: var(--orange); }
+
+  /* Layout */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 220px;
+    background: var(--dark);
+    border-right: 1px solid var(--border);
+    padding: 20px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+  }
+
+  .nav-section-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    padding: 12px 10px 6px;
+    font-weight: 700;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+
+  .nav-item:hover { background: var(--card); color: var(--text); }
+  .nav-item.active {
+    background: linear-gradient(135deg, #e8661020, #f5a62310);
+    color: var(--orange);
+    border-color: #e8661030;
+  }
+
+  .nav-icon { font-size: 18px; width: 24px; text-align: center; }
+
+  /* Content */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px;
+    background: var(--black);
+  }
+
+  /* Pages */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Page header */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .page-title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--text);
+  }
+
+  .page-title span { color: var(--orange); }
+
+  /* Stats cards */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--orange), var(--orange-gold));
+  }
+
+  .stat-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .stat-value { font-size: 32px; font-weight: 900; color: var(--text); font-family: 'Raleway', sans-serif; }
+  .stat-icon { position: absolute; right: 16px; top: 16px; font-size: 28px; opacity: 0.15; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--orange), var(--orange-gold));
+    color: white;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .btn-danger { background: var(--red); color: white; }
+  .btn-danger:hover { opacity: 0.85; }
+
+  .btn-ghost {
+    background: var(--card2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--orange); color: var(--orange); }
+
+  .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 7px; }
+
+  /* Tables */
+  .table-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    background: var(--card2);
+    padding: 13px 16px;
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  tbody tr {
+    border-top: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  tbody tr:hover { background: #ffffff08; }
+  tbody td {
+    padding: 13px 16px;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  /* Tags/badges */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-admin { background: #e8661020; color: var(--orange); border: 1px solid #e8661040; }
+  .badge-agent { background: #2196F320; color: var(--blue); border: 1px solid #2196F340; }
+  .badge-supervisor { background: #9C27B020; color: var(--purple); border: 1px solid #9C27B040; }
+  .badge-active { background: #4CAF5020; color: var(--green); border: 1px solid #4CAF5040; }
+  .badge-inactive { background: #99999920; color: var(--muted); border: 1px solid #99999940; }
+
+  /* Notes / Pense-bête */
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .note-card {
+    border-radius: 14px;
+    padding: 18px;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+
+  .note-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px #00000040; }
+
+  .note-card.yellow { background: #FFD60015; border: 1px solid #FFD60040; }
+  .note-card.orange { background: #E8661015; border: 1px solid #E8661040; }
+  .note-card.blue { background: #2196F315; border: 1px solid #2196F340; }
+  .note-card.green { background: #4CAF5015; border: 1px solid #4CAF5040; }
+  .note-card.purple { background: #9C27B015; border: 1px solid #9C27B040; }
+
+  .note-tag {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    opacity: 0.7;
+  }
+
+  .note-card.yellow .note-tag { color: var(--yellow); }
+  .note-card.orange .note-tag { color: var(--orange); }
+  .note-card.blue .note-tag { color: var(--blue); }
+  .note-card.green .note-tag { color: var(--green); }
+  .note-card.purple .note-tag { color: var(--purple); }
+
+  .note-title {
+    font-weight: 800;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .note-body {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .note-meta {
+    margin-top: 14px;
+    font-size: 11px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .note-actions { display: flex; gap: 6px; }
+  .note-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    padding: 2px 4px;
+  }
+  .note-btn:hover { opacity: 1; }
+
+  .note-pin {
+    position: absolute;
+    top: -8px;
+    right: 16px;
+    font-size: 20px;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #00000090;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 32px;
+    width: 500px;
+    max-width: 95vw;
+    box-shadow: 0 40px 80px #00000080;
+    position: relative;
+  }
+
+  .modal-title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 24px;
+    color: var(--orange);
+  }
+
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--orange); }
+  .form-textarea { resize: vertical; min-height: 90px; }
+  .form-select option { background: var(--dark); }
+
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  /* Permissions checkboxes */
+  .perms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .perm-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: border 0.2s;
+  }
+
+  .perm-item:hover { border-color: var(--orange); }
+  .perm-item input { accent-color: var(--orange); width: 16px; height: 16px; cursor: pointer; }
+
+  /* Search bar */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .search-input {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 16px;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s;
+  }
+
+  .search-input:focus { border-color: var(--orange); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--card);
+    border: 1px solid var(--orange);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 32px #00000060;
+    animation: slideIn 0.3s ease;
+  }
+
+  .toast.show { display: flex; }
+  .toast-icon { font-size: 18px; }
+
+  @keyframes slideIn {
+    from { transform: translateX(100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  /* Client detail */
+  .client-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Color picker for notes */
+  .color-picker {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+
+  .color-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: border 0.2s;
+  }
+  .color-dot.selected { border-color: white; }
+  .color-dot.yellow { background: var(--yellow); }
+  .color-dot.orange { background: var(--orange); }
+  .color-dot.blue { background: var(--blue); }
+  .color-dot.green { background: var(--green); }
+  .color-dot.purple { background: var(--purple); }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+  .empty-state p { font-size: 15px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .sidebar { width: 60px; }
+    .sidebar .nav-item span, .sidebar .nav-section-title { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">w<span>ee</span></div>
+    <div class="login-sub">Call Center — CRM</div>
+    <input type="text" id="login-user" placeholder="Identifiant" value="admin" />
+    <input type="password" id="login-pass" placeholder="Mot de passe" value="admin123" />
+    <button class="btn-login" onclick="doLogin()">Se connecter</button>
+    <div class="login-hint">admin / admin123 · agent1 / agent123</div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="header-logo">w<span>ee</span><span class="header-badge">CRM</span></div>
+    </div>
+    <div class="header-user">
+      <div class="user-info">
+        <div class="user-name" id="header-name">Admin</div>
+        <div class="user-role" id="header-role">Administrateur</div>
+      </div>
+      <div class="user-avatar" id="header-avatar">A</div>
+      <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <div class="sidebar">
+      <div class="nav-section-title">Navigation</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)">
+        <span class="nav-icon">📊</span><span>Tableau de bord</span>
+      </div>
+      <div class="nav-item" onclick="showPage('clients',this)">
+        <span class="nav-icon">👥</span><span>Clients</span>
+      </div>
+      <div class="nav-item" onclick="showPage('notes',this)">
+        <span class="nav-icon">📝</span><span>Pense-bête</span>
+      </div>
+      <div class="nav-item admin-only" onclick="showPage('users',this)">
+        <span class="nav-icon">🔐</span><span>Utilisateurs</span>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div class="page-title">Tableau de <span>bord</span></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Clients</div>
+            <div class="stat-value" id="stat-clients">0</div>
+            <div class="stat-icon">👥</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Notes actives</div>
+            <div class="stat-value" id="stat-notes">0</div>
+            <div class="stat-icon">📝</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Agents</div>
+            <div class="stat-value" id="stat-agents">0</div>
+            <div class="stat-icon">🎧</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Utilisateurs</div>
+            <div class="stat-value" id="stat-users">0</div>
+            <div class="stat-icon">🔐</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div class="table-wrap">
+            <div style="padding:16px 20px;border-bottom:1px solid var(--border);font-weight:800;font-size:15px;">🕐 Dernières notes</div>
+            <div id="recent-notes-list" style="padding:8px 0;"></div>
+          </div>
+          <div class="table-wrap">
+            <div style="padding:16px 20px;border-bottom:1px solid var(--border);font-weight:800;font-size:15px;">🕐 Derniers clients</div>
+            <div id="recent-clients-list" style="padding:8px 0;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLIENTS -->
+      <div class="page" id="page-clients">
+        <div class="page-header">
+          <div class="page-title">Gestion <span>Clients</span></div>
+          <button class="btn btn-primary" onclick="openClientModal()">➕ Nouveau client</button>
+        </div>
+        <div class="search-bar">
+          <input class="search-input" id="client-search" placeholder="🔍  Rechercher un client..." oninput="renderClients()">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nom complet</th>
+                <th>Téléphone</th>
+                <th>Email</th>
+                <th>Statut</th>
+                <th>Agent assigné</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="clients-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      <div class="page" id="page-notes">
+        <div class="page-header">
+          <div class="page-title">Pense-<span>bête</span></div>
+          <button class="btn btn-primary" onclick="openNoteModal()">➕ Nouvelle note</button>
+        </div>
+        <div class="notes-grid" id="notes-grid"></div>
+      </div>
+
+      <!-- USERS -->
+      <div class="page" id="page-users">
+        <div class="page-header">
+          <div class="page-title">Gestion <span>Utilisateurs</span></div>
+          <button class="btn btn-primary" onclick="openUserModal()">➕ Nouvel utilisateur</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Identifiant</th>
+                <th>Rôle</th>
+                <th>Statut</th>
+                <th>Permissions</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Client Modal -->
+<div class="modal-overlay" id="client-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('client-modal')">✕</button>
+    <div class="modal-title" id="client-modal-title">➕ Nouveau client</div>
+    <div class="client-detail">
+      <div class="form-group">
+        <label class="form-label">Prénom</label>
+        <input class="form-input" id="c-prenom" placeholder="Jean">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nom</label>
+        <input class="form-input" id="c-nom" placeholder="Dupont">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Téléphone</label>
+        <input class="form-input" id="c-tel" placeholder="+237 6XX XXX XXX">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="c-email" placeholder="email@exemple.com">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Statut</label>
+      <select class="form-select" id="c-statut">
+        <option value="Actif">Actif</option>
+        <option value="Inactif">Inactif</option>
+        <option value="En attente">En attente</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes / Remarques</label>
+      <textarea class="form-textarea" id="c-notes" placeholder="Informations importantes sur ce client..."></textarea>
+    </div>
+    <input type="hidden" id="c-id">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('client-modal')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveClient()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Note Modal -->
+<div class="modal-overlay" id="note-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('note-modal')">✕</button>
+    <div class="modal-title" id="note-modal-title">📝 Nouvelle note</div>
+    <div class="form-group">
+      <label class="form-label">Titre</label>
+      <input class="form-input" id="n-titre" placeholder="Titre de la note...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Catégorie</label>
+      <input class="form-input" id="n-categorie" placeholder="ex: Rappel, Urgent, Info...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contenu</label>
+      <textarea class="form-textarea" id="n-body" placeholder="Contenu de votre note..." style="min-height:120px;"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Couleur</label>
+      <div class="color-picker">
+        <div class="color-dot yellow selected" onclick="selectColor('yellow',this)"></div>
+        <div class="color-dot orange" onclick="selectColor('orange',this)"></div>
+        <div class="color-dot blue" onclick="selectColor('blue',this)"></div>
+        <div class="color-dot green" onclick="selectColor('green',this)"></div>
+        <div class="color-dot purple" onclick="selectColor('purple',this)"></div>
+      </div>
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:8px;">
+      <input type="checkbox" id="n-epingle" style="accent-color:var(--orange);width:16px;height:16px;">
+      <label for="n-epingle" style="font-size:14px;font-weight:600;cursor:pointer;">📌 Épingler cette note</label>
+    </div>
+    <input type="hidden" id="n-id">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('note-modal')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveNote()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- User Modal -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('user-modal')">✕</button>
+    <div class="modal-title" id="user-modal-title">👤 Nouvel utilisateur</div>
+    <div class="client-detail">
+      <div class="form-group">
+        <label class="form-label">Prénom</label>
+        <input class="form-input" id="u-prenom" placeholder="Jean">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nom</label>
+        <input class="form-input" id="u-nom" placeholder="Dupont">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Identifiant</label>
+        <input class="form-input" id="u-login" placeholder="jean.dupont">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <input class="form-input" type="password" id="u-pass" placeholder="••••••••">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Rôle</label>
+      <select class="form-select" id="u-role">
+        <option value="agent">Agent</option>
+        <option value="supervisor">Superviseur</option>
+        <option value="admin">Administrateur</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Permissions</label>
+      <div class="perms-grid">
+        <label class="perm-item"><input type="checkbox" id="p-create"> Créer des fiches</label>
+        <label class="perm-item"><input type="checkbox" id="p-read"> Voir les fiches</label>
+        <label class="perm-item"><input type="checkbox" id="p-update"> Modifier les fiches</label>
+        <label class="perm-item"><input type="checkbox" id="p-delete"> Supprimer des fiches</label>
+        <label class="perm-item"><input type="checkbox" id="p-notes"> Gérer les notes</label>
+        <label class="perm-item"><input type="checkbox" id="p-export"> Exporter données</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Statut</label>
+      <select class="form-select" id="u-statut">
+        <option value="Actif">Actif</option>
+        <option value="Inactif">Inactif</option>
+      </select>
+    </div>
+    <input type="hidden" id="u-id">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('user-modal')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveUser()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal" style="width:380px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:12px;">⚠️</div>
+    <div class="modal-title" style="text-align:center;color:var(--red);" id="confirm-title">Confirmer la suppression</div>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:24px;" id="confirm-msg">Cette action est irréversible.</p>
+    <div class="modal-actions" style="justify-content:center;">
+      <button class="btn btn-ghost" onclick="closeModal('confirm-modal')">Annuler</button>
+      <button class="btn btn-danger" id="confirm-btn">🗑️ Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✅</span>
+  <span id="toast-msg">Action réussie</span>
+</div>
+
+<script>
+// ===== DATA =====
+let currentUser = null;
+let selectedColor = 'yellow';
+
+const USERS_KEY = 'wee_users';
+const CLIENTS_KEY = 'wee_clients';
+const NOTES_KEY = 'wee_notes';
+
+function getData(key, def) {
+  try { return JSON.parse(localStorage.getItem(key)) || def; } catch(e) { return def; }
+}
+
+function setData(key, val) {
+  localStorage.setItem(key, JSON.stringify(val));
+}
+
+// Init default data
+function initData() {
+  if (!getData(USERS_KEY, null)) {
+    setData(USERS_KEY, [
+      { id: 1, prenom: 'Admin', nom: 'Système', login: 'admin', pass: 'admin123', role: 'admin', statut: 'Actif', perms: { create: true, read: true, update: true, delete: true, notes: true, export: true } },
+      { id: 2, prenom: 'Marie', nom: 'Nguema', login: 'agent1', pass: 'agent123', role: 'agent', statut: 'Actif', perms: { create: true, read: true, update: false, delete: false, notes: true, export: false } },
+      { id: 3, prenom: 'Paul', nom: 'Ateba', login: 'super1', pass: 'super123', role: 'supervisor', statut: 'Actif', perms: { create: true, read: true, update: true, delete: false, notes: true, export: true } }
+    ]);
+  }
+  if (!getData(CLIENTS_KEY, null)) {
+    setData(CLIENTS_KEY, [
+      { id: 1, prenom: 'Céleste', nom: 'Mbarga', tel: '+237 699 123 456', email: 'celeste@mail.cm', statut: 'Actif', notes: 'Cliente VIP, préfère être appelée le matin.' },
+      { id: 2, prenom: 'Robert', nom: 'Tchoupo', tel: '+237 677 456 789', email: 'robert@mail.cm', statut: 'Actif', notes: 'Problème de facturation résolu le 03/03.' },
+      { id: 3, prenom: 'Aïcha', nom: 'Bello', tel: '+237 655 789 012', email: 'aicha@mail.cm', statut: 'En attente', notes: 'En attente de rappel.' }
+    ]);
+  }
+  if (!getData(NOTES_KEY, null)) {
+    setData(NOTES_KEY, [
+      { id: 1, titre: 'Rappel réunion', categorie: 'Urgent', body: 'Réunion d\'équipe à 14h00 - présence obligatoire de tous les agents.', color: 'orange', epingle: true, date: new Date().toLocaleDateString('fr-FR'), author: 'Admin Système' },
+      { id: 2, titre: 'Procédure escalade', categorie: 'Info', body: 'En cas de client mécontent niveau 3, transférer immédiatement au superviseur Paul Ateba.', color: 'blue', epingle: false, date: new Date().toLocaleDateString('fr-FR'), author: 'Admin Système' },
+      { id: 3, titre: 'Objectif mars', categorie: 'Objectif', body: 'Atteindre 95% de satisfaction client ce mois-ci. Focus sur les temps de réponse.', color: 'green', epingle: true, date: new Date().toLocaleDateString('fr-FR'), author: 'Admin Système' }
+    ]);
+  }
+}
+
+// ===== AUTH =====
+function doLogin() {
+  const login = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value.trim();
+  const users = getData(USERS_KEY, []);
+  const user = users.find(u => u.login === login && u.pass === pass && u.statut === 'Actif');
+  if (!user) { showToast('❌', 'Identifiants incorrects ou compte inactif'); return; }
+  currentUser = user;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('app').style.flexDirection = 'column';
+  document.getElementById('header-name').textContent = user.prenom + ' ' + user.nom;
+  document.getElementById('header-role').textContent = roleLabel(user.role);
+  document.getElementById('header-avatar').textContent = user.prenom[0] + user.nom[0];
+  // Show/hide admin nav
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.style.display = user.role === 'admin' ? 'flex' : 'none';
+  });
+  updateStats();
+  renderDashboard();
+  showToast('✅', 'Bienvenue, ' + user.prenom + ' !');
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+function roleLabel(r) {
+  return { admin: 'Administrateur', supervisor: 'Superviseur', agent: 'Agent' }[r] || r;
+}
+
+// ===== NAVIGATION =====
+function showPage(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  if (el) el.classList.add('active');
+  if (page === 'clients') renderClients();
+  if (page === 'notes') renderNotes();
+  if (page === 'users') renderUsers();
+  if (page === 'dashboard') { updateStats(); renderDashboard(); }
+}
+
+// ===== STATS =====
+function updateStats() {
+  const clients = getData(CLIENTS_KEY, []);
+  const notes = getData(NOTES_KEY, []);
+  const users = getData(USERS_KEY, []);
+  document.getElementById('stat-clients').textContent = clients.length;
+  document.getElementById('stat-notes').textContent = notes.length;
+  document.getElementById('stat-agents').textContent = users.filter(u => u.role === 'agent').length;
+  document.getElementById('stat-users').textContent = users.length;
+}
+
+function renderDashboard() {
+  const notes = getData(NOTES_KEY, []).slice(-3).reverse();
+  const clients = getData(CLIENTS_KEY, []).slice(-3).reverse();
+
+  const notesList = document.getElementById('recent-notes-list');
+  notesList.innerHTML = notes.length ? notes.map(n => `
+    <div style="padding:10px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+      <span style="font-size:18px;">📝</span>
+      <div>
+        <div style="font-weight:700;font-size:13px;">${n.titre}</div>
+        <div style="font-size:11px;color:var(--muted);">${n.date} — ${n.author}</div>
+      </div>
+    </div>
+  `).join('') : '<div style="padding:20px;color:var(--muted);font-size:13px;">Aucune note</div>';
+
+  const clientsList = document.getElementById('recent-clients-list');
+  clientsList.innerHTML = clients.length ? clients.map(c => `
+    <div style="padding:10px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+      <span style="font-size:18px;">👤</span>
+      <div>
+        <div style="font-weight:700;font-size:13px;">${c.prenom} ${c.nom}</div>
+        <div style="font-size:11px;color:var(--muted);">${c.tel}</div>
+      </div>
+    </div>
+  `).join('') : '<div style="padding:20px;color:var(--muted);font-size:13px;">Aucun client</div>';
+}
+
+// ===== CLIENTS =====
+function renderClients() {
+  const search = document.getElementById('client-search')?.value?.toLowerCase() || '';
+  let clients = getData(CLIENTS_KEY, []);
+  if (search) clients = clients.filter(c =>
+    (c.prenom + ' ' + c.nom + c.tel + c.email).toLowerCase().includes(search)
+  );
+  const canDelete = currentUser?.role === 'admin' || currentUser?.perms?.delete;
+  const canUpdate = currentUser?.role === 'admin' || currentUser?.perms?.update;
+  const tbody = document.getElementById('clients-tbody');
+  tbody.innerHTML = clients.length ? clients.map(c => `
+    <tr>
+      <td><strong>${c.prenom} ${c.nom}</strong></td>
+      <td>${c.tel}</td>
+      <td>${c.email}</td>
+      <td><span class="badge ${c.statut === 'Actif' ? 'badge-active' : 'badge-inactive'}">${c.statut}</span></td>
+      <td><span style="color:var(--muted);font-size:12px;">—</span></td>
+      <td style="display:flex;gap:6px;">
+        ${canUpdate ? `<button class="btn btn-ghost btn-sm" onclick="editClient(${c.id})">✏️ Modifier</button>` : ''}
+        ${canDelete ? `<button class="btn btn-danger btn-sm" onclick="deleteConfirm('client',${c.id})">🗑️</button>` : ''}
+      </td>
+    </tr>
+  `).join('') : `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">👥</div><p>Aucun client trouvé</p></div></td></tr>`;
+}
+
+function openClientModal(id = null) {
+  document.getElementById('c-id').value = '';
+  document.getElementById('c-prenom').value = '';
+  document.getElementById('c-nom').value = '';
+  document.getElementById('c-tel').value = '';
+  document.getElementById('c-email').value = '';
+  document.getElementById('c-statut').value = 'Actif';
+  document.getElementById('c-notes').value = '';
+  document.getElementById('client-modal-title').textContent = '➕ Nouveau client';
+  document.getElementById('client-modal').classList.add('open');
+}
+
+function editClient(id) {
+  const c = getData(CLIENTS_KEY, []).find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('c-id').value = c.id;
+  document.getElementById('c-prenom').value = c.prenom;
+  document.getElementById('c-nom').value = c.nom;
+  document.getElementById('c-tel').value = c.tel;
+  document.getElementById('c-email').value = c.email;
+  document.getElementById('c-statut').value = c.statut;
+  document.getElementById('c-notes').value = c.notes;
+  document.getElementById('client-modal-title').textContent = '✏️ Modifier client';
+  document.getElementById('client-modal').classList.add('open');
+}
+
+function saveClient() {
+  const id = document.getElementById('c-id').value;
+  const client = {
+    id: id ? parseInt(id) : Date.now(),
+    prenom: document.getElementById('c-prenom').value.trim(),
+    nom: document.getElementById('c-nom').value.trim(),
+    tel: document.getElementById('c-tel').value.trim(),
+    email: document.getElementById('c-email').value.trim(),
+    statut: document.getElementById('c-statut').value,
+    notes: document.getElementById('c-notes').value.trim()
+  };
+  if (!client.prenom || !client.nom) { showToast('⚠️', 'Veuillez renseigner le nom'); return; }
+  let clients = getData(CLIENTS_KEY, []);
+  if (id) {
+    clients = clients.map(c => c.id === parseInt(id) ? client : c);
+  } else {
+    clients.push(client);
+  }
+  setData(CLIENTS_KEY, clients);
+  closeModal('client-modal');
+  renderClients();
+  updateStats();
+  showToast('✅', 'Client enregistré avec succès');
+}
+
+// ===== NOTES =====
+function renderNotes() {
+  const notes = getData(NOTES_KEY, []);
+  const sorted = [...notes.filter(n => n.epingle), ...notes.filter(n => !n.epingle)];
+  const grid = document.getElementById('notes-grid');
+  const canDelete = currentUser?.role === 'admin' || currentUser?.perms?.delete;
+  grid.innerHTML = sorted.length ? sorted.map(n => `
+    <div class="note-card ${n.color}">
+      ${n.epingle ? '<div class="note-pin">📌</div>' : ''}
+      <div class="note-tag">${n.categorie || 'Note'}</div>
+      <div class="note-title">${n.titre}</div>
+      <div class="note-body">${n.body}</div>
+      <div class="note-meta">
+        <span>${n.date} · ${n.author}</span>
+        <div class="note-actions">
+          <button class="note-btn" onclick="editNote(${n.id})">✏️</button>
+          ${canDelete ? `<button class="note-btn" onclick="deleteConfirm('note',${n.id})">🗑️</button>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('') : `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">📝</div><p>Aucune note. Créez votre premier pense-bête !</p></div>`;
+}
+
+function openNoteModal() {
+  document.getElementById('n-id').value = '';
+  document.getElementById('n-titre').value = '';
+  document.getElementById('n-categorie').value = '';
+  document.getElementById('n-body').value = '';
+  document.getElementById('n-epingle').checked = false;
+  selectedColor = 'yellow';
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+  document.querySelector('.color-dot.yellow').classList.add('selected');
+  document.getElementById('note-modal-title').textContent = '📝 Nouvelle note';
+  document.getElementById('note-modal').classList.add('open');
+}
+
+function editNote(id) {
+  const n = getData(NOTES_KEY, []).find(x => x.id === id);
+  if (!n) return;
+  document.getElementById('n-id').value = n.id;
+  document.getElementById('n-titre').value = n.titre;
+  document.getElementById('n-categorie').value = n.categorie;
+  document.getElementById('n-body').value = n.body;
+  document.getElementById('n-epingle').checked = n.epingle;
+  selectedColor = n.color;
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+  document.querySelector('.color-dot.' + n.color)?.classList.add('selected');
+  document.getElementById('note-modal-title').textContent = '✏️ Modifier la note';
+  document.getElementById('note-modal').classList.add('open');
+}
+
+function selectColor(c, el) {
+  selectedColor = c;
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function saveNote() {
+  const id = document.getElementById('n-id').value;
+  const note = {
+    id: id ? parseInt(id) : Date.now(),
+    titre: document.getElementById('n-titre').value.trim(),
+    categorie: document.getElementById('n-categorie').value.trim(),
+    body: document.getElementById('n-body').value.trim(),
+    color: selectedColor,
+    epingle: document.getElementById('n-epingle').checked,
+    date: new Date().toLocaleDateString('fr-FR'),
+    author: currentUser.prenom + ' ' + currentUser.nom
+  };
+  if (!note.titre) { showToast('⚠️', 'Veuillez saisir un titre'); return; }
+  let notes = getData(NOTES_KEY, []);
+  if (id) {
+    notes = notes.map(n => n.id === parseInt(id) ? note : n);
+  } else {
+    notes.push(note);
+  }
+  setData(NOTES_KEY, notes);
+  closeModal('note-modal');
+  renderNotes();
+  updateStats();
+  showToast('✅', 'Note enregistrée !');
+}
+
+// ===== USERS =====
+function renderUsers() {
+  const users = getData(USERS_KEY, []);
+  const tbody = document.getElementById('users-tbody');
+  tbody.innerHTML = users.map(u => {
+    const permsArr = Object.entries(u.perms || {}).filter(([,v]) => v).map(([k]) => ({
+      create:'Créer', read:'Voir', update:'Modifier', delete:'Supprimer', notes:'Notes', export:'Export'
+    }[k]));
+    return `
+    <tr>
+      <td><strong>${u.prenom} ${u.nom}</strong></td>
+      <td style="color:var(--muted);font-family:monospace;">${u.login}</td>
+      <td><span class="badge badge-${u.role}">${roleLabel(u.role)}</span></td>
+      <td><span class="badge ${u.statut === 'Actif' ? 'badge-active' : 'badge-inactive'}">${u.statut}</span></td>
+      <td style="font-size:11px;color:var(--muted);">${permsArr.join(', ') || '—'}</td>
+      <td style="display:flex;gap:6px;">
+        <button class="btn btn-ghost btn-sm" onclick="editUser(${u.id})">✏️ Modifier</button>
+        ${u.id !== currentUser.id ? `<button class="btn btn-danger btn-sm" onclick="deleteConfirm('user',${u.id})">🗑️</button>` : '<span style="font-size:11px;color:var(--muted);align-self:center;">Vous</span>'}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openUserModal() {
+  document.getElementById('u-id').value = '';
+  document.getElementById('u-prenom').value = '';
+  document.getElementById('u-nom').value = '';
+  document.getElementById('u-login').value = '';
+  document.getElementById('u-pass').value = '';
+  document.getElementById('u-role').value = 'agent';
+  document.getElementById('u-statut').value = 'Actif';
+  ['create','read','update','delete','notes','export'].forEach(p => document.getElementById('p-' + p).checked = p === 'read');
+  document.getElementById('user-modal-title').textContent = '👤 Nouvel utilisateur';
+  document.getElementById('user-modal').classList.add('open');
+}
+
+function editUser(id) {
+  const u = getData(USERS_KEY, []).find(x => x.id === id);
+  if (!u) return;
+  document.getElementById('u-id').value = u.id;
+  document.getElementById('u-prenom').value = u.prenom;
+  document.getElementById('u-nom').value = u.nom;
+  document.getElementById('u-login').value = u.login;
+  document.getElementById('u-pass').value = '';
+  document.getElementById('u-role').value = u.role;
+  document.getElementById('u-statut').value = u.statut;
+  ['create','read','update','delete','notes','export'].forEach(p => {
+    document.getElementById('p-' + p).checked = !!u.perms?.[p];
+  });
+  document.getElementById('user-modal-title').textContent = '✏️ Modifier utilisateur';
+  document.getElementById('user-modal').classList.add('open');
+}
+
+function saveUser() {
+  const id = document.getElementById('u-id').value;
+  const perms = {};
+  ['create','read','update','delete','notes','export'].forEach(p => {
+    perms[p] = document.getElementById('p-' + p).checked;
+  });
+  let pass = document.getElementById('u-pass').value;
+  let users = getData(USERS_KEY, []);
+  if (id) {
+    const existing = users.find(u => u.id === parseInt(id));
+    if (!pass) pass = existing?.pass;
+  }
+  const user = {
+    id: id ? parseInt(id) : Date.now(),
+    prenom: document.getElementById('u-prenom').value.trim(),
+    nom: document.getElementById('u-nom').value.trim(),
+    login: document.getElementById('u-login').value.trim(),
+    pass: pass,
+    role: document.getElementById('u-role').value,
+    statut: document.getElementById('u-statut').value,
+    perms
+  };
+  if (!user.prenom || !user.login || !user.pass) { showToast('⚠️', 'Renseignez tous les champs obligatoires'); return; }
+  if (id) {
+    users = users.map(u => u.id === parseInt(id) ? user : u);
+  } else {
+    users.push(user);
+  }
+  setData(USERS_KEY, users);
+  closeModal('user-modal');
+  renderUsers();
+  updateStats();
+  showToast('✅', 'Utilisateur enregistré !');
+}
+
+// ===== DELETE =====
+function deleteConfirm(type, id) {
+  const msg = { client: 'Supprimer ce client ?', note: 'Supprimer cette note ?', user: 'Supprimer cet utilisateur ?' }[type];
+  document.getElementById('confirm-title').textContent = msg;
+  document.getElementById('confirm-msg').textContent = 'Cette action est irréversible.';
+  document.getElementById('confirm-btn').onclick = () => {
+    if (type === 'client') {
+      setData(CLIENTS_KEY, getData(CLIENTS_KEY, []).filter(c => c.id !== id));
+      renderClients();
+    } else if (type === 'note') {
+      setData(NOTES_KEY, getData(NOTES_KEY, []).filter(n => n.id !== id));
+      renderNotes();
+    } else if (type === 'user') {
+      setData(USERS_KEY, getData(USERS_KEY, []).filter(u => u.id !== id));
+      renderUsers();
+    }
+    updateStats();
+    closeModal('confirm-modal');
+    showToast('🗑️', 'Élément supprimé');
+  };
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+// ===== UTILS =====
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function showToast(icon, msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = icon;
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+// Enter to login
+document.getElementById('login-pass').addEventListener('keyup', e => { if (e.key === 'Enter') doLogin(); });
+
+// Init
+initData();
+</script>
+</body>
+</html>
