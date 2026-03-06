@@ -962,15 +962,10 @@ function initData() {
   if (!getData(USERS_KEY, null)) {
     setData(USERS_KEY, [
       { id: 1, prenom: 'Admin', nom: 'Système', login: 'admin', pass: 'admin123', role: 'admin', statut: 'Actif', perms: { create: true, read: true, update: true, delete: true, notes: true, export: true } },
-      { id: 2, prenom: 'Marie', nom: 'Nguema', login: 'agent1', pass: 'agent123', role: 'agent', statut: 'Actif', perms: { create: true, read: true, update: false, delete: false, notes: true, export: false } },
-      { id: 3, prenom: 'Paul', nom: 'Ateba', login: 'super1', pass: 'super123', role: 'supervisor', statut: 'Actif', perms: { create: true, read: true, update: true, delete: false, notes: true, export: true } }
-    ]);
+     ]);
   }
   if (!getData(CLIENTS_KEY, null)) {
     setData(CLIENTS_KEY, [
-      { id: 1, prenom: 'Céleste', nom: 'Mbarga', tel: '+237 699 123 456', email: 'celeste@mail.cm', statut: 'Actif', notes: 'Cliente VIP, préfère être appelée le matin.' },
-      { id: 2, prenom: 'Robert', nom: 'Tchoupo', tel: '+237 677 456 789', email: 'robert@mail.cm', statut: 'Actif', notes: 'Problème de facturation résolu le 03/03.' },
-      { id: 3, prenom: 'Aïcha', nom: 'Bello', tel: '+237 655 789 012', email: 'aicha@mail.cm', statut: 'En attente', notes: 'En attente de rappel.' }
     ]);
   }
   if (!getData(NOTES_KEY, null)) {
